@@ -1,0 +1,8 @@
+[package]
+name = "state_space"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nalgebra = "*"
+num-traits = "*"
