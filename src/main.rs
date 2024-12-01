@@ -1,7 +1,6 @@
 use na::SMatrix;
 use nalgebra as na;
-use state_space::sys_vec::SysVec;
-use state_space::StateSpace;
+use state_space::{StateSpace, SysVec};
 
 fn main() {
     type T = f64;

@@ -3,7 +3,8 @@
 
 `state_space` is an implementation of a state space linear time invariant (LTI) system for use in
 flight code. One would typically design a system in [MATLAB](https://www.mathworks.com/) or
-similar and then implement the results here.
+similar to do loop shaping, bode diagrams, or other design techniques. Then implement the
+results here as a state-space system for use in embedded code.
 
 ## Features
 * **StateSpace** structure holds:
@@ -16,7 +17,7 @@ similar and then implement the results here.
 * **SysVec** structure is provided to users to hold:
     * u, x, y vectors
     * Lower and upper bounds. Defaults are -9e99 and +9e99, respectively.
-    * Setter methods for convenience.
+    * Setter methods, for convenience.
 
 ### Example 1. SISO, first order system.
 ``` rust
@@ -25,7 +26,7 @@ fn main() {
 
     use nalgebra as na;
     use na::SMatrix;
-    use state_space::{StateSpace, sys_vec::SysVec};     // DEBUG, how to make this transparent????
+    use state_space::{StateSpace, SysVec};
 
     // Choose data type and size for this example.
     type T = f64;
@@ -69,12 +70,19 @@ fn main() {
 // 1. reset(), of course this is just set_x()...
 // 3. Documentation.
 
-pub mod sys_vec; // re-export.
 
+
+// lib.rs
+
+
+// Use statements for dependencies.
 use na::SMatrix;
 use nalgebra as na;
 use num_traits::{NumCast, One, Zero};
-use sys_vec::SysVec;
+
+// Use statements for re-exports.
+mod sys_vec;
+pub use sys_vec::SysVec;    // re-export.
 
 #[derive(Debug, Copy, Clone)]
 pub struct StateSpace<T, const NU: usize, const NX: usize, const NY: usize> {

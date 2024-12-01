@@ -29,14 +29,14 @@ pub struct SysVec<T, const N: usize> {
 
 impl<T, const N: usize> SysVec<T, N>
 where
-    T: nalgebra::Scalar + core::cmp::PartialOrd + num_traits::NumCast,
+    T: nalgebra::Scalar + PartialOrd + num_traits::NumCast,
 {
 
     /// Construct a SysVec struct with default values: 0 for val and +/-9e99 for ub and lb.
     ///
     /// ```rust
     /// use nalgebra::{vector, SVector};
-    /// use state_space::sys_vec::SysVec;
+    /// use state_space::SysVec;
     /// type T = f32;
     /// const N: usize = 3;
     /// let my_vec: SysVec<T, N> = SysVec::new();   // my_vec.val is all zeros.
@@ -67,7 +67,7 @@ where
     ///
     /// ```rust
     /// use nalgebra::SVector;
-    /// use state_space::sys_vec::SysVec;
+    /// use state_space::SysVec;
     /// type T = f32;
     /// const N: usize = 3;
     /// let my_vec: SysVec<T, N> = SysVec::from_val(10.17);
@@ -88,7 +88,7 @@ where
     ///
     /// ```rust
     /// use nalgebra::SVector;
-    /// use state_space::sys_vec::SysVec;
+    /// use state_space::SysVec;
     /// type T = f32;
     /// const N: usize = 3;
     /// let my_vec: SysVec<T, N> = SysVec::from_scalars(10.17, -3.14, 6.28);
@@ -123,7 +123,7 @@ where
     ///
     /// ```rust
     /// use nalgebra::SVector;
-    /// use state_space::sys_vec::SysVec;
+    /// use state_space::SysVec;
     /// type T = f64;
     /// const N: usize = 3;
     ///
@@ -144,7 +144,7 @@ where
     ///
     /// ```rust
     /// use nalgebra::SVector;
-    /// use state_space::sys_vec::SysVec;
+    /// use state_space::SysVec;
     /// type T = f64;
     /// const N: usize = 3;
     ///
@@ -165,7 +165,7 @@ where
     ///
     /// ```rust
     /// use nalgebra::SVector;
-    /// use state_space::sys_vec::SysVec;
+    /// use state_space::SysVec;
     /// type T = f64;
     /// const N: usize = 3;
     ///
@@ -186,7 +186,7 @@ where
     ///
     /// ```rust
     /// use nalgebra::SVector;
-    /// use state_space::sys_vec::SysVec;
+    /// use state_space::SysVec;
     /// type T = f64;
     /// const N: usize = 3;
     ///
@@ -203,7 +203,7 @@ where
     ///
     /// ```rust
     /// use nalgebra::SVector;
-    /// use state_space::sys_vec::SysVec;
+    /// use state_space::SysVec;
     /// type T = f64;
     /// const N: usize = 3;
     ///
@@ -220,7 +220,7 @@ where
     ///
     /// ```rust
     /// use nalgebra::SVector;
-    /// use state_space::sys_vec::SysVec;
+    /// use state_space::SysVec;
     /// type T = f64;
     /// const N: usize = 3;
     ///
@@ -237,7 +237,7 @@ where
     /// ///
     /// ```rust
     /// use nalgebra::{SVector, vector};
-    /// use state_space::sys_vec::SysVec;
+    /// use state_space::SysVec;
     /// type T = f64;
     /// const N: usize = 3;
     ///
