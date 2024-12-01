@@ -1,8 +1,72 @@
-// Entry point for this project.
+/*!
+# state_space
+
+`state_space` is an implementation of a state space linear time invariant (LTI) system for use in
+flight code. One would typically design a system in [MATLAB](https://www.mathworks.com/) or
+similar and then implement the results here.
+
+## Features
+* **StateSpace** structure holds:
+    * The `A`, `B`, `C`, `D` matrices.
+    * Contains vectors of `u`, `x`, and `y` including upper and lower bounds.
+    * Contains time step, `dt`.
+* Provides an `update()` method to step forward in time.
+* All matrices and vectors use the format of [nalgebra] and are implemented as SMatrix objects.
+* Users can choose the data type (typically `f32` or `f64`) and size of the matrices using.
+* **SysVec** structure is provided to users to hold:
+    * u, x, y vectors
+    * Lower and upper bounds. Defaults are -9e99 and +9e99, respectively.
+    * Setter methods for convenience.
+
+### Example 1. SISO, first order system.
+``` rust
+fn main() {
+
+
+    use nalgebra as na;
+    use na::SMatrix;
+    use state_space::{StateSpace, sys_vec::SysVec};     // DEBUG, how to make this transparent????
+
+    // Choose data type and size for this example.
+    type T = f64;
+    const NU: usize = 1;
+    const NX: usize = 1;
+    const NY: usize = 1;
+
+    // Create a new state space system of the user specified type and size.
+    let mut sys: StateSpace<T, NU, NX, NY> = StateSpace::new();
+
+    // Update the state space system with nalgebra style matrices. Note that for SISO first order
+    // system that the matrices are scalars.
+    sys.set_a( -1.000 * SMatrix::<T, NX, NX>::identity())
+        .set_b( 1.000 * SMatrix::<T, NX, NU>::identity())
+        .set_c( 1.000 * SMatrix::<T, NY, NX>::identity())
+        .set_dt(0.1);
+
+    // Optional: The initial condition for u, x, or y can be set. If not set by the user then
+    // they default to a 0-vector of the appropriate size.
+    let x0: SysVec<T, NX> = SysVec::from_val(0.1017);
+    sys.set_x(x0);
+
+    // Let's simulate a step response by setting u to 1.0.
+    let u0: SysVec<T, NU> = SysVec::from_val(1.0);
+    sys.set_u(u0);
+
+    // Step the model several times and print the result to screen.
+    for _ in 0..10 {
+        sys.update();
+        println!("The output value is: {:?}", sys.get_y());
+    }
+}
+```
+
+# DEBUG, add Example 2 here, a 2nd order system.
+
+
+*/
 
 // DEBUG: Items to add:
 // 1. reset(), of course this is just set_x()...
-// 2. enum for continuous, forward-euler, ...
 // 3. Documentation.
 
 pub mod sys_vec; // re-export.

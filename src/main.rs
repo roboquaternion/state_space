@@ -19,9 +19,9 @@ fn main() {
 
     // Create a state space system.
     let mut sys: StateSpace<T, NU, NX, NY> = StateSpace::new();
-    sys.set_a(-1.000 * SMatrix::<T, NX, NX>::identity()) // Ad = 1+A*dt.
-        .set_b( 1.000 * SMatrix::<T, NX, NU>::identity()) // Bd = B*dt.
-        .set_c( 1.000 * SMatrix::<T, NY, NX>::identity()) // Cd = C.
+    sys.set_a(-1.000 * SMatrix::<T, NX, NX>::identity())
+        .set_b( 1.000 * SMatrix::<T, NX, NU>::identity())
+        .set_c( 1.000 * SMatrix::<T, NY, NX>::identity())
         .set_x(x0)
         .set_dt(0.1);
 
