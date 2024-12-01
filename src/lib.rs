@@ -19,10 +19,11 @@ results here as a state-space system for use in embedded code.
     * Lower and upper bounds. Defaults are -9e99 and +9e99, respectively.
     * Setter methods, for convenience.
 
-### Example 1. SISO, first order system.
+### Example 1:
+**SISO, first order system.**
+
 ``` rust
 fn main() {
-
 
     use nalgebra as na;
     use na::SMatrix;
@@ -60,8 +61,48 @@ fn main() {
     }
 }
 ```
+### Example 2:
+**SISO, second order system.**
 
-# DEBUG, add Example 2 here, a 2nd order system.
+The following is an implementation of y/u = tf(w^2, [1, 2 * z * w, w^2]), expressed as a state space
+system.
+```rust
+fn main() {
+    use nalgebra as na;
+    use na::{SMatrix, matrix};
+    use state_space::{StateSpace, SysVec};
+
+    // Choose data type and size for this example.
+    type T = f64;
+    const NU: usize = 1;
+    const NX: usize = 2;  // 2nd order system has 2 states.
+    const NY: usize = 1;
+    let w = 2.0*std::f64::consts::PI;
+    let z = 0.707f64;
+    let a = matrix![ 0.0,      1.0;
+                        -w*w, -2.0*z*w];
+    let b = matrix![0.0;
+                    w*w];
+    let c = matrix![1.0_f64, 0.0];
+
+    let mut sys = StateSpace::new();
+    sys
+        .set_a(a)
+        .set_b(b)
+        .set_c(c)
+        .set_dt(0.1);
+
+    // Let's simulate a step response by setting u to 1.0.
+    let u0: SysVec<T, NU> = SysVec::from_val(1.0);
+    sys.set_u(u0);
+
+    // Step the model several times and print the result to screen.
+    for _ in 0..10 {
+        sys.update();
+        println!("The output value is: {:?}", sys.get_y());
+    }
+}
+```
 
 
 */
@@ -69,10 +110,6 @@ fn main() {
 // DEBUG: Items to add:
 // 1. reset(), of course this is just set_x()...
 // 3. Documentation.
-
-
-
-// lib.rs
 
 
 // Use statements for dependencies.
@@ -106,6 +143,24 @@ where
         + Zero
         + NumCast,
 {
+    /// Create a new StateSpace structure with default values for matrices and SysVec structs.
+    ///
+    /// ```rust
+    /// use nalgebra as na;
+    /// use nalgebra::SMatrix;
+    /// use state_space::StateSpace;
+    /// type T = f64;
+    /// const NU: usize = 1;
+    /// const NX: usize = 1;
+    /// const NY: usize = 1;
+    ///
+    /// let my_ss:StateSpace<T, NU, NX, NY> = StateSpace::new();
+    ///
+    /// // Just one assertion show here, but it is similar for all matrices, and all vectors. See
+    /// // addition documentation elsewhere in this crate.
+    /// let exp_c: SMatrix<T, NY, NX> = SMatrix::from_element(0.0);
+    /// assert_eq!(exp_c, my_ss.get_c());
+    /// ```
     pub fn new() -> Self {
         // System matrices.
         let a: SMatrix<T, NX, NX> = SMatrix::from_element(Zero::zero());
@@ -131,6 +186,9 @@ where
         }
     }
 
+    // Setters are provided many of the fields of the StateSpace struct. They can be chained with
+    // StateSpace::new() to create state space systems of the correct size and shape. See the
+    // examples above for some options.
     pub fn set_a(&mut self, mat: SMatrix<T, NX, NX>) -> &mut Self {
         self.a = mat;
         self
@@ -171,21 +229,71 @@ where
         self
     }
 
+    /// There are getter methods for the properties of StateSpace. This is a demo of
+    /// `StateSpace.get_a()`, all other getters are similar.
+    ///
+    /// ``` rust
+    /// use nalgebra::SMatrix;
+    /// use state_space::StateSpace;
+    /// type T = f64;
+    /// const NU: usize = 1;
+    /// const NX: usize = 1;
+    /// const NY: usize = 1;
+    ///
+    /// let my_a: SMatrix<T, NX, NX> = -1.0 * SMatrix::identity();
+    /// let my_b: SMatrix<T, NX, NU> = SMatrix::identity();
+    /// let my_c: SMatrix<T, NY, NX> = SMatrix::identity();
+    ///
+    /// let mut my_ss:StateSpace<T, NU, NX, NY> = StateSpace::new();
+    /// my_ss
+    ///     .set_a(my_a)
+    ///     .set_b(my_b)
+    ///     .set_c(my_c);
+    ///
+    /// let exp_a: SMatrix<T, NX, NX> = SMatrix::from_element(-1.0);
+    /// assert_eq!(exp_a, my_ss.get_a());
+    /// ```
+    pub fn get_a(&self) -> SMatrix<T, NX, NX> {
+        self.a.clone()
+    }
+
+    /// Getter for StateSpace.b. Documentation is similar to StateSpace.get_a().
+    pub fn get_b(&self) -> SMatrix<T, NX, NU> {
+        self.b.clone()
+    }
+
+    /// Getter for StateSpace.c. Documentation is similar to StateSpace.get_a().
+    pub fn get_c(&self) -> SMatrix<T, NY, NX> {
+        self.c.clone()
+    }
+
+    /// Getter for StateSpace.d. Documentation is similar to StateSpace.get_a().
+    pub fn get_d(&self) -> SMatrix<T, NY, NU> {
+        self.d.clone()
+    }
+
+    /// Getter for StateSpace.u. Documentation is similar to StateSpace.get_a().
     pub fn get_u(&self) -> SMatrix<T, NU, 1> {
         self.u.get_val()
     }
 
+    /// Getter for StateSpace.x. Documentation is similar to StateSpace.get_a().
     pub fn get_x(&self) -> SMatrix<T, NX, 1> {
         self.x.get_val()
     }
 
+    /// Getter for StateSpace.y. Documentation is similar to StateSpace.get_a().
     pub fn get_y(&self) -> SMatrix<T, NY, 1> {
         self.y.get_val()
     }
 
-    // Apply forward-euler equations to move forward in time by dt time units.
-    // This is the continuous time version of the equation.
+
+    /// Implements the forward-Euler equations for a continuous system. See examples above for a
+    /// demonstration.
     pub fn update(&mut self) -> &mut Self {
+        // Apply forward-euler equations to move forward in time by dt time units.
+        // This is the continuous time version of the equation.
+
         // Check u and x for clamp, update self.
         self.u.clamp();
         self.x.clamp();
