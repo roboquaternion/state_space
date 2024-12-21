@@ -107,11 +107,6 @@ fn main() {
 
 */
 
-// DEBUG: Items to add:
-// 1. reset(), of course this is just set_x()...
-// 3. Documentation.
-
-
 // Use statements for dependencies.
 use na::SMatrix;
 use nalgebra as na;

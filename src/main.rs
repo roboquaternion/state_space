@@ -1,3 +1,5 @@
+// #![no_std]
+
 use na::SMatrix;
 use nalgebra as na;
 use state_space::{StateSpace, SysVec};
@@ -8,9 +10,9 @@ fn main() {
     const NX: usize = 1;
     const NY: usize = 1;
 
-    // a matrix from a vector.
-    let v: Vec<T> = (1..=NX * NX).map(|x| x as T).collect(); // DEBUG, get a ^2 or ** or pow.
-    let _a: SMatrix<T, NX, NX> = SMatrix::from_vec(v);
+    // // a matrix from a vector. Requires std.
+    // let v: Vec<T> = (1..=NX * NX).map(|x| x as T).collect(); // DEBUG, get a ^2 or ** or pow.
+    // let _a: SMatrix<T, NX, NX> = SMatrix::from_vec(v);
 
     // Create a SysVec.
     let svu: SysVec<T, NU> = SysVec::from_scalars(1.0, -9e99, 9e99);
